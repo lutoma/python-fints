@@ -19,8 +19,9 @@ logger = logging.getLogger(__name__)
 class FinTS3Client:
     version = 300
 
-    def __init__(self):
+    def __init__(self, mt940_options = None):
         self.accounts = []
+        self.mt940_options = mt940_options
 
     def _new_dialog(self):
         raise NotImplemented()
@@ -86,7 +87,7 @@ class FinTS3Client:
             if seg:
                 m = re_data.match(seg)
                 if m:
-                    statement += mt940_to_array(m.group(2))
+                    statement += mt940_to_array(m.group(2), self.mt940_options)
 
         logger.debug('Statement: {}'.format(statement))
 
@@ -217,13 +218,13 @@ class FinTS3Client:
 
 class FinTS3PinTanClient(FinTS3Client):
 
-    def __init__(self, blz, username, pin, server):
+    def __init__(self, blz, username, pin, server, **kwargs):
         self.username = username
         self.blz = blz
         self.pin = pin
         self.connection = FinTSHTTPSConnection(server)
         self.systemid = 0
-        super().__init__()
+        super().__init__(**kwargs)
 
     def _new_dialog(self):
         dialog = FinTSDialog(self.blz, self.username, self.pin, self.systemid, self.connection)

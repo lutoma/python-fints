@@ -4,10 +4,10 @@ from .models import Holding
 from datetime import datetime
 
 
-def mt940_to_array(data):
+def mt940_to_array(data, options):
     data = data.replace("@@", "\r\n")
     data = data.replace("-0000", "+0000")
-    transactions = mt940.models.Transactions()
+    transactions = mt940.models.Transactions(**options)
     return transactions.parse(data)
 
 
